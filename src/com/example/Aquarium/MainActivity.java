@@ -22,14 +22,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            Log.w(TAG, "Key pressed, destroy!");
-//            //((Activity) view.getContext()).fileList();
-//            this.finish();
-//        }
         view.threadsStop();
-        //((Activity) view.getContext()).finish();
-        //view.onKeyDown(keyCode, event);
         this.finish();
         Log.w(TAG, "seems to be finished ");
         return super.onKeyDown(keyCode, event);

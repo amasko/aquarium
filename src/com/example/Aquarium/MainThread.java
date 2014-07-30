@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 public class MainThread extends Thread {
     private static final String TAG = MainThread.class.getSimpleName();
     private static final int MAX_FPS = 50;
-    private static final int MAX_FRAME_SKIPS = 5;
+    private static final int MAX_FRAME_SKIPS = 4;
     private static final int FRAME_PERIOD = 1000 / MAX_FPS;
 
     /**
@@ -37,8 +37,6 @@ public class MainThread extends Thread {
     private double  fpsStore[];
             // the number of times the stat has been read
     private long    statsCount = 0;
-            // the average FPS since the game started
-    private double  averageFps = 0.0;
 
     // Surface holder that can access the physical surface
     private final SurfaceHolder surfaceHolder;
@@ -138,6 +136,7 @@ public class MainThread extends Thread {
                 totalFps += fpsStore[i];
             }
             // obtain the average
+            double averageFps = 0.0;
             if (statsCount < FPS_HISTORY_NR) {
                 // in case of the first 10 triggers
                 averageFps = totalFps / statsCount;

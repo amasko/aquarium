@@ -77,7 +77,7 @@ public class Fish {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);
+        canvas.drawBitmap(bitmap, x - radius, y - radius, null);
     }
 
     /**
@@ -109,8 +109,8 @@ public class Fish {
     }
 
     public void handleActionDown(int eventX, int eventY) {
-        if (eventX >= (x - bitmap.getWidth() / 2) && (eventX <= (x + bitmap.getWidth()/2))) {
-            if (eventY >= (y - bitmap.getHeight() / 2) && (y <= (y + bitmap.getHeight() / 2))) {
+        if (eventX >= (x - radius) && (eventX <= (x + radius))) {
+            if (eventY >= (y - radius) && (y <= (y + radius))) {
                 setTouched(true);
             } else {
                 setTouched(false);

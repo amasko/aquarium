@@ -8,16 +8,16 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import com.example.Aquarium.model.Fish;
-import com.example.Aquarium.model.FishUtils;
-import com.example.Aquarium.model.Speed;
-import com.example.Aquarium.model.SupplementThread;
+import com.example.Aquarium.model.*;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainView extends SurfaceView implements SurfaceHolder.Callback {
+
     private static final String TAG = MainView.class.getSimpleName();
+    private static final int EXPLOSION_SIZE = 400;
+    private Explosion explosion;
     private final Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.background_picture);
     Rect screenRect; //represents the area of the screen to draw background
     Paint paint;
@@ -43,7 +43,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         screenRect = new Rect(0, 0, getWidth(), getHeight());
         paint = new Paint();
-        paint.setARGB(255, 255, 255, 255);
+        paint.setARGB(255, 20, 20, 230);
         paint.setTextSize(30);
         //paint.setFilterBitmap(true);
         list = FishUtils.createPopulation(this);
@@ -74,22 +74,26 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // for (Fish fish : list) {
         for (Fish fish : list) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 // delegating event handling to the
                 fish.handleActionDown((int) event.getX(), (int) event.getY());
-
                 // check if in the lower part of the screen we exit
-                if (event.getY() > getHeight() - 50) {
-                    thread.setRunning(false);
-                    ((Activity) getContext()).finish();
-                } else {
-                    Log.d(TAG, "Coords: x=" + event.getX() + ",y=" + event.getY());
+//                if (event.getY() > getHeight() - 50) {
+//                    thread.setRunning(false);
+//                    ((Activity) getContext()).finish();
+//                } else {
+//                    Log.d(TAG, "Coords: x=" + event.getX() + ",y=" + event.getY());
+//                }
+                if (fish.isTouched() && (explosion == null || explosion.getState() == Explosion.STATE_DEAD)) {
+                    explosion = new Explosion(EXPLOSION_SIZE, (int) event.getX(), (int) event.getY());
+                    removeFishSet.add(fish);
                 }
             }
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 // gestures
-                if (fish.isTouched()) {
+                if (fish != null && fish.isTouched()) {
                     // was picked up and is being dragged
                     fish.setX((int) event.getX());
                     fish.setY((int) event.getY());
@@ -97,26 +101,38 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 // touch was released
-                if (fish.isTouched()) {
+                if (fish != null && fish.isTouched()) {
                     fish.setTouched(false);
                 }
             }
         }
+        if (!removeFishSet.isEmpty()) {
+            list.removeAll(removeFishSet);
+        }
+        removeFishSet.clear();
+
+//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//            // handle touch
+//            // check if explosion is null or if it is still active
+//            if (explosion == null || explosion.getState() == Explosion.STATE_DEAD) {
+//                explosion = new Explosion(EXPLOSION_SIZE, (int) event.getX(), (int) event.getY());
+//            }
+//        }
         return true;
     }
-
-
 
     public void setAvgFps(String avgFps) {
         this.avgFps = avgFps;
     }
 
-
-
     public void render(Canvas canvas) {
         canvas.drawBitmap(background, null, screenRect, paint); // stretches background img to the size of the screen
         for (Fish f : list) {
             f.draw(canvas);
+        }
+        // render explosions
+        if (explosion != null) {
+            explosion.draw(canvas);
         }
         //Log.w(TAG, "FPS: " + avgFps);
         if (avgFps != null) {
@@ -155,20 +171,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
             }
             i++;
         }
-        //old algorithm
-//        while (listIterator.hasNext() && i < list.size() && list.size() > 1) {
-//            Fish fish = listIterator.next();
-//            checkList = list.subList(i, list.size() - 1);
-//              if (!checkList.isEmpty()) {
-//                for (Fish f : checkList) {
-//                    eatenFish(fish, f);
-//                }
-//            } else {
-//                eatenFish(list.get(list.size() - 1), list.get(list.size() - 2));
-//            }
-//            i++;
-//        }
-        //old algo end
         if (!removeFishSet.isEmpty()) {
             list.removeAll(removeFishSet);
             long timeStamp = System.currentTimeMillis();
@@ -206,6 +208,9 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
             }
             // Update fish position
             f.update();
+        }
+        if (explosion != null && explosion.isAlive()) {
+            explosion.update(getHolder().getSurfaceFrame());
         }
     }
 
