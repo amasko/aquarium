@@ -125,7 +125,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void eatenFish(Fish fish1, Fish fish2) {
-        if (Rect.intersects(fish1.getRect(), fish2.getRect())) {
+        //if (Rect.intersects(fish1.getRect(), fish2.getRect())) {
+        if (Fish.overlapCircles(fish1, fish2)) {
             if (fish1.isPredator() && fish2.isPredator() && fish1.getSize() > fish2.getSize() ||
                     fish1.isPredator() && !fish2.isPredator() && fish1.getSize() >= fish2.getSize() - 1) {
                 Log.i(TAG, "!!! Some fish iterated is going to be eaten! fish: ispredator: " + fish1.isPredator() +

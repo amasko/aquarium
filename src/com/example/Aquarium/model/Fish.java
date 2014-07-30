@@ -11,6 +11,7 @@ public class Fish {
     private int x;
     private int y;
     private int size;
+    private int radius;
     private boolean isPredator;
     private boolean touched;	// if fish is touched
     private Rect rect;         //rectangle with bitmap borders coordinates to find intersections
@@ -18,15 +19,16 @@ public class Fish {
 
     public Fish(Bitmap bitmap, boolean isPredator, int size, int x, int y) {
         this.bitmap = bitmap;
+        this.radius = bitmap.getWidth() / 2;
         this.isPredator = isPredator;
         this.size = size;
         this.x = x;
         this.y = y;
         this.speed = new Speed(1.5f * (6 - size));
-        this.rect = new Rect(x - bitmap.getWidth() / 2,
-                y - bitmap.getHeight() / 2,
-                x + bitmap.getWidth() / 2,
-                y + bitmap.getHeight() / 2);
+//        this.rect = new Rect(x - bitmap.getWidth() / 2,
+//                y - bitmap.getHeight() / 2,
+//                x + bitmap.getWidth() / 2,
+//                y + bitmap.getHeight() / 2);
 //        Log.e(TAG, " size: " + size +
 //                " ; predator: " + isPredator +
 //                " ; speedX: " + (int) Math.ceil(speed.getXv()) +
@@ -56,6 +58,10 @@ public class Fish {
 
     public int getSize() { return size; }
 
+    public int getRadius() {
+        return this.radius;
+    }
+
     public boolean isTouched() {
         return touched;
     }
@@ -81,11 +87,25 @@ public class Fish {
         if (!touched) {
             x += (Math.ceil(speed.getXv()) * speed.getxDirection());
             y += (Math.ceil(speed.getYv()) * speed.getyDirection());
-            rect.set(x - bitmap.getWidth() / 2,
-                    y - bitmap.getHeight() / 2,
-                    x + bitmap.getWidth() / 2,
-                    y + bitmap.getHeight() / 2);
+//            rect.set(x - bitmap.getWidth() / 2,
+//                    y - bitmap.getHeight() / 2,
+//                    x + bitmap.getWidth() / 2,
+//                    y + bitmap.getHeight() / 2);
         }
+    }
+
+    /**
+     * determines whether inscribed circles overlap, which means that fishes meet
+     *
+     * @return circles overlap
+     */
+    public static boolean overlapCircles(Fish f1, Fish f2) {
+        int distX = f1.getX() - f2.getX();
+        int distY = f1.getY() - f2.getY();
+        //distance between centers squared
+        int distSquared = distX * distX + distY * distY;
+        int radiusSum = f1.getRadius() + f2.getRadius();
+        return distSquared <= radiusSum * radiusSum;
     }
 
     public void handleActionDown(int eventX, int eventY) {
