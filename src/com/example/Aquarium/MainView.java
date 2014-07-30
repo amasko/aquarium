@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final String TAG = MainView.class.getSimpleName();
-    private static final int EXPLOSION_SIZE = 400;
+    private static final int EXPLOSION_SIZE = 300;
     private Explosion explosion;
     private final Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.background_picture);
     Rect screenRect; //represents the area of the screen to draw background
@@ -108,8 +108,10 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         }
         if (!removeFishSet.isEmpty()) {
             list.removeAll(removeFishSet);
+            long timeStamp = System.currentTimeMillis();
+            FishUtils.creationScheduler.put(timeStamp, removeFishSet.size());
+            removeFishSet.clear();
         }
-        removeFishSet.clear();
 
 //        if (event.getAction() == MotionEvent.ACTION_DOWN) {
 //            // handle touch

@@ -28,7 +28,6 @@ public class Explosion {
         this.size = particleNr;
     }
 
-
     // helper methods -------------------------
     public boolean isAlive() {
         return this.state == STATE_ALIVE;
@@ -49,6 +48,10 @@ public class Explosion {
             if (isDead)
                 this.state = STATE_DEAD;
         }
+    }
+
+    public int getState() {
+        return state;
     }
 
     public void update(Rect container) {
